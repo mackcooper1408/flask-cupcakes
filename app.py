@@ -1,6 +1,6 @@
 """Flask app for Cupcakes"""
 
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, Cupcake
 
@@ -49,8 +49,54 @@ def list_cupcake():
 @app.route("/api/cupcakes/<int:cupcake_id>")
 def get_cupcake(cupcake_id):
     """ Return information on cupcake"""
+    new_cupcake = Cupcake.query.get(cupcake_id)
 
-    new_cupcake = Cupcake.query.get_or_404(cupcake_id)
+    if not new_cupcake:
+        return ({"failed": "cupcake cannot be found"}, 404)
+
     serialized = new_cupcake.serialize()
 
-    return jsonify(cupcake=serialized)
+    return (jsonify(cupcake=serialized), 200)
+
+
+@app.route("/api/cupcakes/<int:cupcake_id>", methods=["PUT"])
+def update_cupcake(cupcake_id):
+    """ Update a cupcake by ID"""
+
+    data = request.json
+
+    new_cupcake = Cupcake.query.get(cupcake_id)
+
+    if not new_cupcake:
+        return ({"failed": "cupcake cannot be found"}, 404)
+
+    new_cupcake.flavor = data['flavor']
+    new_cupcake.size = data['size']
+    new_cupcake.rating = data['rating']
+    new_cupcake.image = data['image']
+
+    db.session.commit()
+
+    serialized = new_cupcake.serialize()
+
+    return (jsonify(cupcake=serialized), 200)
+
+
+@app.route("/api/cupcakes/<int:cupcake_id>", methods=["DELETE"])
+def delete_cupcake(cupcake_id):
+    """ Delete a cupcake by ID"""
+
+    new_cupcake = Cupcake.query.get(cupcake_id)
+
+    if not new_cupcake:
+        return ({"failed": "cupcake cannot be found"}, 404)
+
+    db.session.delete(new_cupcake)
+    db.session.commit()
+
+    msg = {"message": "Deleted"}
+
+    return (msg, 200)
+    
+
+@app.route()
