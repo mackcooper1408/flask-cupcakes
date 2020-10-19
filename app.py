@@ -16,6 +16,13 @@ connect_db(app)
 debug = DebugToolbarExtension(app)
 
 
+@app.route("/")
+def home():
+    """ Render static html page"""
+
+    return render_template("index.html")
+
+
 @app.route("/api/cupcakes", methods=["POST"])
 def add_new_cupcake():
     """ show list of all cupcakes """
@@ -97,6 +104,3 @@ def delete_cupcake(cupcake_id):
     msg = {"message": "Deleted"}
 
     return (msg, 200)
-    
-
-@app.route()
