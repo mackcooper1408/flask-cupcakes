@@ -9,30 +9,62 @@ Cupcakes
 {% endblock %}
 
 {% block content %}
+    <form action="/" class="form-group" id="search">
+        <label for="search">
+            <input class="form-control" type="text" name="search-term" id="search-term" placeholder="flavor search">
+        </label>
+        <button class="btn btn-secondary" type="submit">Search</button>
+    </form>
+
     <ul class="list-group" id="cupcake-list">
 
     </ul>
 
-    <h2 class="text-center mt-4">Add New Cupcake</h2>
-    <br><br>
-    <form action="/" method="POST" class="form-group">
-        <label for="cupcake-flavor">Flavor: 
-            <input name="cupcake-flavor" id="cupcake-flavor" class="form-control" placeholder="snozzberry" size="50">
-        </label>
-        <br><br>
-        <label for="cupcake-size">Size: 
-            <input name="cupcake-size" id="cupcake-size" class="form-control" placeholder="HUGE" size="50">
-        </label>
-        <br><br>
-        <label for="cupcake-rating">Rating: 
-            <input name="cupcake-rating" id="cupcake-rating" class="form-control" placeholder="10" size="50">
-        </label>
-        <br><br>
-        <label for="img-url">Image URL: 
-            <input name="img-url" id="img-url" class="form-control" type="url" value="https://tinyurl.com/demo-cupcake" size="50">
-        </label>
-        <br><br>
+    <h2 class="text-center my-4">Add New Cupcake</h2>
 
-        <button type="submit" class="btn btn-primary">Add Cupcake</button>
+    <form class="form-group" id="cupcake-form" method="POST">
+        {{ form.hidden_tag() }}
+        <!--add type=hidden form fields -->
+    
+        {% for field in form
+             if field.widget.input_type != 'hidden' %}
+    
+        <p>
+            {{ field.label }}: 
+            {{ field(class="form-control", id=field.label.text) }}
+    
+            {% for error in field.errors %}
+                {{ error }}
+            {% endfor %}
+        </p>
+    
+        {% endfor %}
+    
+        <button class="btn btn-primary" type="submit">Add Cupcake</button>
     </form>
-{% endblock %}
+    <a href="/">Go back</a>
+    {% endblock %}
+
+
+
+
+
+    
+    <!-- <label for="cupcake-flavor">Flavor: 
+        <input name="cupcake-flavor" id="cupcake-flavor" class="form-control" placeholder="snozzberry" size="50">
+    </label>
+    <br><br>
+    <label for="cupcake-size">Size: 
+        <input name="cupcake-size" id="cupcake-size" class="form-control" placeholder="HUGE" size="50">
+    </label>
+    <br><br>
+    <label for="cupcake-rating">Rating: 
+        <input name="cupcake-rating" id="cupcake-rating" class="form-control" placeholder="10" size="50">
+    </label>
+    <br><br>
+    <label for="img-url">Image URL: 
+        <input name="img-url" id="img-url" class="form-control" type="url" value="https://tinyurl.com/demo-cupcake" size="50">
+    </label>
+    <br><br>
+
+    <button type="submit" class="btn btn-primary">Add Cupcake</button> -->

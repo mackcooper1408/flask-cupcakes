@@ -1,12 +1,14 @@
-const BASE_URL = "http://localhost:5000/api/cupcakes"
+const BASE_URL = "http://localhost:5000/api/cupcakes";
 
 const $body = $("body");
 
 const $cupcakeList = $("#cupcake-list");
 
-const $formSubmit = $("form").on("submit", cupcakeSubmitForm);
+const $formSubmit = $("#cupcake-form").on("submit", cupcakeSubmitForm);
 
 const $deleteCupcake = $cupcakeList.on("click", "li", deleteCupcake);
+
+const $searchCupcakes = $("#search").on("submit", cupcakeSearch);
 
 async function getCupcakeList() {
   const resp = await axios({
@@ -32,10 +34,10 @@ async function addCupcakesToDOM() {
 
 async function cupcakeSubmitForm(evt) {
   evt.preventDefault();
-  let flavor = $("#cupcake-flavor").val();
-  let size = $("#cupcake-size").val();
-  let rating = $("#cupcake-rating").val();
-  let image = $("#img-url").val();
+  let flavor = $("#Flavor").val();
+  let size = $("#Size").val();
+  let rating = $("#Rating").val();
+  let image = $("#Image").val();
 
   let response = await axios({
     url: BASE_URL,
@@ -48,16 +50,30 @@ async function cupcakeSubmitForm(evt) {
     }
   });
 
-  let newCupcake = response.data.cupcake;
-  // console.log(response)
-  // showNewCupcake(newCupcake);
   addCupcakesToDOM();
   evt.target.reset();
 }
 
-// function showNewCupcake(newCupcake) {
-//     $cupcakeList.append($(`<li class="list-group-item" id="${newCupcake.id}">${newCupcake.flavor}</li>`));
-// }
+async function cupcakeSearch(evt) {
+  evt.preventDefault();
+
+  let searchTerm = $("#search-term").val();
+  let response = await axios({
+    url: `${BASE_URL}/search`,
+    method: "GET",
+    params: {searchTerm}
+  });
+
+  list = response.data.cupcakes;
+
+  $cupcakeList.empty();
+
+  for (cake of list) {
+    $cupcakeList.append($(`<li class="list-group-item cupcakes" id="${cake.id}">${cake.flavor}</li>`));
+  }
+
+  evt.target.reset();
+}
 
 async function deleteCupcake(evt) {
   let cupcakeId = this.id;

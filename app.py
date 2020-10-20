@@ -3,6 +3,7 @@
 from flask import Flask, render_template, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, Cupcake
+from forms import AddCupcake
 
 app = Flask(__name__)
 
@@ -18,9 +19,11 @@ debug = DebugToolbarExtension(app)
 
 @app.route("/")
 def home():
-    """ Render static html page"""
+    """ Render dynamic html page"""
 
-    return render_template("index.html")
+    form = AddCupcake()
+
+    return render_template("index.html", form=form)
 
 
 @app.route("/api/cupcakes", methods=["POST"])
@@ -104,3 +107,15 @@ def delete_cupcake(cupcake_id):
     msg = {"message": "Deleted"}
 
     return (msg, 200)
+
+
+@app.route("/api/cupcakes/search")
+def search_cupcake():
+    """ Search for a cupcake """
+    search = request.args["searchTerm"]
+
+    cupcakes = Cupcake.query.filter(Cupcake.flavor.ilike(f"%{search}%")).all()
+
+    serialized = [c.serialize() for c in cupcakes]
+
+    return (jsonify(cupcakes=serialized), 200)
